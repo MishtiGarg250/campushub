@@ -9,23 +9,26 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitClient {
 
     private const val BASE_URL =
-        "http://10.0.2.2:5000/"
+        "https://androidbackend-1-vljt.onrender.com/"
 
-    fun create(context: Context): CampusApi {
+    lateinit var api: CampusApi
+        private set
+
+    fun initialize(context: Context) {
 
         val tokenManager =
             TokenManager(context.applicationContext)
 
-        val okHttpClient =
+        val client =
             OkHttpClient.Builder()
                 .addInterceptor(
                     AuthInterceptor(tokenManager)
                 )
                 .build()
 
-        return Retrofit.Builder()
+        api = Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(okHttpClient)
+            .client(client)
             .addConverterFactory(
                 GsonConverterFactory.create()
             )

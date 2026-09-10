@@ -2,6 +2,7 @@ package com.campus.hub.data.remote
 
 import com.campus.hub.data.local.TokenManager
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -13,7 +14,7 @@ class AuthInterceptor(
         chain: Interceptor.Chain
     ): Response {
 
-        val token = kotlinx.coroutines.runBlocking {
+        val token = runBlocking {
             tokenManager.token.first()
         }
 
@@ -22,12 +23,12 @@ class AuthInterceptor(
             .apply {
 
                 if (!token.isNullOrEmpty()) {
-
                     addHeader(
                         "Authorization",
                         "Bearer $token"
                     )
                 }
+
             }
             .build()
 
