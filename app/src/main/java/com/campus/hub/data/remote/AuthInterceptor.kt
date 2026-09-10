@@ -1,0 +1,36 @@
+package com.campus.hub.data.remote
+
+import com.campus.hub.data.local.TokenManager
+import kotlinx.coroutines.flow.first
+import okhttp3.Interceptor
+import okhttp3.Response
+
+class AuthInterceptor(
+    private val tokenManager: TokenManager
+) : Interceptor {
+
+    override fun intercept(
+        chain: Interceptor.Chain
+    ): Response {
+
+        val token = kotlinx.coroutines.runBlocking {
+            tokenManager.token.first()
+        }
+
+        val request = chain.request()
+            .newBuilder()
+            .apply {
+
+                if (!token.isNullOrEmpty()) {
+
+                    addHeader(
+                        "Authorization",
+                        "Bearer $token"
+                    )
+                }
+            }
+            .build()
+
+        return chain.proceed(request)
+    }
+}
